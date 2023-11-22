@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from './businessProfileStyle';
+import QRcode from '../../assets/images/qr.png';
 
 const BusinessProfileScreen = ({ route, navigation }) => {
     const { business } = route.params;
@@ -49,6 +50,16 @@ const BusinessProfileScreen = ({ route, navigation }) => {
                     <Ionicons name="heart-outline" size={24} color={favorite ? "red" : "black"} />
                     <Text style={styles.favoriteText}>Favorite</Text>
                 </TouchableOpacity>
+            </View>
+            <View style={styles.qrCodeContainer}>
+                <Text style={styles.qrCodeNote}>
+                    Scan this QR code to earn loyalty points when making a purchase at this store.
+                    Remember to scan before payment to claim your rewards.
+                </Text>
+                <Image
+                    source={QRcode}
+                    style={styles.qrCodeImage}
+                />
             </View>
         </ScrollView>
     );

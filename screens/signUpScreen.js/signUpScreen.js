@@ -20,30 +20,21 @@ export default function SignupScreen({ navigation }) {
             Alert.alert("Invalid Email", "Please enter a valid email address.");
             return;
         }
-        if (password !== confirmPassword || password === '') {
+        if (password === confirmPassword && password !== '') {
+            setIsLoading(true);
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(userCredentials => {
+                    setIsLoading(false);
+                    userCredentials.user;
+                    navigation.navigate('WelcomeHome')
+                })
+                .catch(error => {
+                    setIsLoading(false);
+                    alert(error.message)
+                });
+        } else {
             Alert.alert("Password Mismatch", "The passwords do not match or are empty.");
-            return;
         }
-
-        setIsLoading(true);
-        fetch('http://192.168.1.94:5000/signup', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                setIsLoading(false);
-                // Handle the response data
-                navigation.navigate('WelcomeHome');
-            })
-            .catch(error => {
-                setIsLoading(false);
-                console.error('Error:', error);
-                Alert.alert("Sign Up Error", "An error occurred during sign up.");
-            });
     };
 
     return (

@@ -13,6 +13,21 @@ const styles = StyleSheet.create({
     content: {
         padding: 15,
     },
+    qrCodeContainer: {
+        alignItems: 'center',
+        marginVertical: 20,
+    },
+    qrCodeImage: {
+        width: 200,
+        height: 200,
+        resizeMode: 'contain',
+    },
+    qrCodeNote: {
+        marginTop: 10,
+        textAlign: 'center',
+        fontSize: 14,
+        color: 'grey',
+    },
     backButton: {
         padding: 10,
         position: 'absolute',
