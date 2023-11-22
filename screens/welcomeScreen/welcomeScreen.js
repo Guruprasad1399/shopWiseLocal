@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Button } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
 import styles from './welcomeScreenStyle';
@@ -13,9 +13,11 @@ const WelcomeScreen = ({ navigation }) => {
         setIsLoading(true);
         signInWithEmailAndPassword(auth, email, password)
             .then(userCredentials => {
-                setIsLoading(false);
                 const user = userCredentials.user;
-                console.log('Logged in with:', user.email);
+                setEmail("");
+                setPassword("");
+                setIsLoading(false);
+                navigation.navigate("Home")
             })
             .catch(error => {
                 setIsLoading(false);
@@ -29,6 +31,10 @@ const WelcomeScreen = ({ navigation }) => {
 
     const navigateToForgotPassword = () => {
         navigation.navigate('Forgot Password');
+    }
+
+    const navigateToHomeScreen = () => {
+        navigation.navigate("Home")
     }
 
     return (
@@ -63,7 +69,7 @@ const WelcomeScreen = ({ navigation }) => {
             <TouchableOpacity style={styles.subtitle} onPress={navigateToForgotPassword}>
                 <Text style={styles.text}>Forgot Password ?</Text>
             </TouchableOpacity>
-
+            <Button title='Skip for now >>' onPress={navigateToHomeScreen} />
         </View>
         )
     );

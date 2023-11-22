@@ -15,12 +15,13 @@ const HomeScreen = ({ navigation }) => {
     const [isFilterModalVisible, setFilterModalVisible] = useState(false);
     const [selectedCategories, setSelectedCategories] = useState(new Set());
     const [selectedRatings, setSelectedRatings] = useState(new Set());
-    const [filteredBusiness, setFilteredBusiness] = useState(Business);
+    const [businessesFromBackend, setBusinessesFromBackend] = useState([]);
+    const [displayedBusinesses, setDisplayedBusinesses] = useState([]);
     const [region, setRegion] = useState({
         latitude: 0,
         longitude: 0,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
+        latitudeDelta: 0.0022,
+        longitudeDelta: 0.0021,
     });
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
@@ -43,24 +44,35 @@ const HomeScreen = ({ navigation }) => {
             setRegion({
                 latitude: currentLocation.coords.latitude,
                 longitude: currentLocation.coords.longitude,
-                latitudeDelta: 0.005,
-                longitudeDelta: 0.005,
+                latitudeDelta: 0.8,
+                longitudeDelta: 0.8,
             });
         })();
+        const fetchBusinesses = async () => {
+            try {
+                const response = await fetch('http://192.168.1.94:5000/Businesses');
+                const data = await response.json();
+                setBusinessesFromBackend(data);
+            } catch (error) {
+                console.error('Error fetching businesses:', error);
+            }
+        };
+        fetchBusinesses();
     }, []);
 
-    const getFilteredBusinesses = () => {
-        return Business.filter(business => {
+    const applySearchAndFilters = () => {
+        const filtered = businessesFromBackend.filter(business => {
             const matchesSearchQuery = searchQuery.length === 0 || business.name.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesCategory = selectedCategories.size === 0 || selectedCategories.has(business.category);
             const matchesRating = selectedRatings.size === 0 || selectedRatings.has(Math.round(business.rating));
             return matchesSearchQuery && matchesCategory && matchesRating;
         });
+        setDisplayedBusinesses(filtered);
     };
 
     useEffect(() => {
-        setFilteredBusiness(getFilteredBusinesses());
-    }, [searchQuery]);
+        applySearchAndFilters();
+    }, [searchQuery, selectedCategories, selectedRatings, businessesFromBackend]);
 
     const renderCategoryCheckBoxes = () => {
         const categories = ["Restaurant", "Bar", "Diner", "Cafe", "Bakery"];
@@ -116,13 +128,13 @@ const HomeScreen = ({ navigation }) => {
     }, []);
 
     const applyFilters = useCallback(() => {
-        setFilteredBusiness(getFilteredBusinesses());
+        applySearchAndFilters();
         toggleFilterModal();
     }, [selectedCategories, selectedRatings]);
 
     const renderItem = useCallback(({ item }) => (
         <TouchableOpacity style={styles.businessItem} onPress={() => { navigateToBusinessProfile(item) }}>
-            <Image source={item.image} style={styles.businessImage} />
+            <Image source={{ uri: item.imageUrl }} style={styles.businessImage} />
             <View style={styles.businessInfo}>
                 <Text style={styles.businessName}>{item.name}</Text>
                 <Text style={styles.businessCategory}>{item.category}</Text>
@@ -142,11 +154,11 @@ const HomeScreen = ({ navigation }) => {
                 showsUserLocation={true}
                 userInterfaceStyle='dark'
             >
-                {filteredBusiness.map(business => (
+                {businessesFromBackend.map(business => (
                     <Marker
                         key={business.id}
                         coordinate={{ latitude: business.latitude, longitude: business.longitude }}
-                        title={business.name}
+                        title={`${business.category} - ${business.name}`}
                     />
                 ))}
             </MapView>
@@ -178,7 +190,7 @@ const HomeScreen = ({ navigation }) => {
                         </View>
                     </Modal>
                     <FlatList
-                        data={filteredBusiness}
+                        data={displayedBusinesses}
                         renderItem={renderItem}
                         showsVerticalScrollIndicator={false}
                         removeClippedSubviews={true}

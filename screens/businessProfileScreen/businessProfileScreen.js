@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import styles from './businessProfileStyle';
 
 const BusinessProfileScreen = ({ route, navigation }) => {
-
     const { business } = route.params;
 
     // Function to handle 'favorite' action
@@ -21,7 +20,7 @@ const BusinessProfileScreen = ({ route, navigation }) => {
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
                 <Ionicons name="arrow-back" size={24} color="black" />
             </TouchableOpacity>
-            <Image source={business.image} style={styles.image} />
+            <Image source={{ uri: business.imageUrl }} style={styles.image} />
             <View style={styles.content}>
                 <Text style={styles.name}>{business.name}</Text>
                 <Text style={styles.description}>{business.description}</Text>
@@ -32,16 +31,31 @@ const BusinessProfileScreen = ({ route, navigation }) => {
                 </View>
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Current Deals</Text>
-                    <Text>{business.deals}</Text>
+                    <Text style={styles.sectionTitle}>Promotion Code</Text>
+                    <Text>{business.promotion}</Text>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Current Offers</Text>
+                    <Text>{business.currentOfferDetails}</Text>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Rating</Text>
+                    <Text>{`${business.rating} Stars`}</Text>
                 </View>
 
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>User Reviews</Text>
-                    {/* Render user reviews here */}
+                    {business.reviews.map((review, index) => (
+                        <View key={index} style={styles.review}>
+                            <Text style={styles.reviewText}>{`Rating: ${review.rating}`}</Text>
+                            <Text style={styles.reviewText}>{review.text}</Text>
+                        </View>
+                    ))}
                 </View>
 
-                <TouchableOpacity onPress={handleFavorite}>
+                <TouchableOpacity onPress={handleFavorite} style={styles.favoriteButton}>
                     <Ionicons name="heart-outline" size={24} color="black" />
                     <Text style={styles.favoriteText}>Favorite</Text>
                 </TouchableOpacity>
