@@ -17,8 +17,8 @@ const HomeScreen = ({ navigation }) => {
     const [selectedRatings, setSelectedRatings] = useState(new Set());
     const [filteredBusiness, setFilteredBusiness] = useState(Business);
     const [region, setRegion] = useState({
-        latitude: 0,
-        longitude: 0,
+        latitude: 41.3172,
+        longitude: -81.4489,
         latitudeDelta: 0.0022,
         longitudeDelta: 0.0021,
     });
