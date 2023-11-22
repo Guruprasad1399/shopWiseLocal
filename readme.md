@@ -2,7 +2,7 @@
 
 ## About The Project
 
-**YOUR_PROJECT_NAME** is a React Native app developed for the notJust.dev Hackathon. This app supports local businesses by connecting them with customers. Features include showcasing local businesses, detailed business profiles, a rewards system (A lyatly points giving system for user who purchase product from local businesses), and user customization.
+**ShopWiseLocal** is a React Native app developed for the notJust.dev Hackathon. This app supports local businesses by connecting them with customers. Features include showcasing local businesses, detailed business profiles, a rewards system (A lyatly points giving system for user who purchase product from local businesses), and user customization.
 
 ### Why This Project Aligns with Hackathon Guidelines:
 - **Innovation:** Unique approach to bolster local communities.
