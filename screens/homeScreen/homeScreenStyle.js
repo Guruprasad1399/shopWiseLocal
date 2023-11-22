@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     },
     searchAndFilterContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         alignItems: 'center',
     },
     businessInfo: {

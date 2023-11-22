@@ -7,6 +7,8 @@ import SignupScreen from './screens/signUpScreen.js/signUpScreen';
 import ForgotPasswordScreen from './screens/forgotPassword/forgotPassword';
 import HomeScreen from './screens/homeScreen/homeScreen';
 import BusinessProfileScreen from './screens/businessProfileScreen/businessProfileScreen';
+import ProfileScreen from './screens/profileScreen/profileScreen';
+import CommunityScreen from './screens/CommunityScreen/CommunityScreen';
 
 const AuthStack = createStackNavigator();
 const MainStack = createStackNavigator();
@@ -29,6 +31,7 @@ function MainStackNavigator() {
     <MainStack.Navigator>
       <MainStack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
       <MainStack.Screen name="Business Profile" component={BusinessProfileScreen} options={{ headerShown: false }} />
+      <MainStack.Screen name="Profile Screen" component={ProfileScreen} options={{ headerShown: false }} />
     </MainStack.Navigator>
   );
 }
@@ -39,6 +42,7 @@ const App = () => {
       <Drawer.Navigator>
         <Drawer.Screen name="Login/ Sign Up" component={AuthStackNavigator} />
         <Drawer.Screen name="Home" component={MainStackNavigator} />
+        <Drawer.Screen name="Community" component={CommunityScreen} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
