@@ -10,7 +10,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
     const handleResetPassword = () => {
         sendPasswordResetEmail(auth, email).then(() => {
             Alert.alert("Password Reset", "Check your email to reset your password.");
-            navigation.navigate("Welcome")
+            navigation.navigate("WelcomeHome")
         }).catch(error => {
             Alert.alert("Error", error.message);
         });

@@ -10,7 +10,9 @@ const data =
             "location": "Downtown",
             "promotion": "Special offer 1",
             "rating": 4.2,
-            "image": StoreImage
+            "image": StoreImage,
+            "latitude": 41.1075,
+            "longitude": -81.9949
         },
         {
             "id": 2,

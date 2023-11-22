@@ -1,19 +1,52 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, Image, Modal } from 'react-native';
-import Business from "../../data/test_data"
+import Business from "../../data/test_data";
+import * as Location from 'expo-location';
+import MapView, { Marker } from 'react-native-maps';
 import styles from "./homeScreenStyle"
+import BottomSheet from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import Checkbox from 'expo-checkbox';
 
 const HomeScreen = ({ navigation }) => {
     const [searchQuery, setSearchQuery] = useState('');
+    const bottomSheetRef = useRef(null);
+    const snapPoints = useMemo(() => ['50%', '90%'], []);
     const [isFilterModalVisible, setFilterModalVisible] = useState(false);
     const [selectedCategories, setSelectedCategories] = useState(new Set());
     const [selectedRatings, setSelectedRatings] = useState(new Set());
     const [filteredBusiness, setFilteredBusiness] = useState(Business);
+    const [region, setRegion] = useState({
+        latitude: 0,
+        longitude: 0,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+    });
+    const [location, setLocation] = useState(null);
+    const [errorMsg, setErrorMsg] = useState(null);
 
     const toggleFilterModal = useCallback(() => {
         setFilterModalVisible(prev => !prev);
+    }, []);
+
+    useEffect(() => {
+        (async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                setErrorMsg('Permission to access location was denied');
+                return;
+            }
+
+            let currentLocation = await Location.getCurrentPositionAsync({});
+            setLocation(currentLocation);
+
+            setRegion({
+                latitude: currentLocation.coords.latitude,
+                longitude: currentLocation.coords.longitude,
+                latitudeDelta: 0.005,
+                longitudeDelta: 0.005,
+            });
+        })();
     }, []);
 
     const getFilteredBusinesses = () => {
@@ -41,6 +74,10 @@ const HomeScreen = ({ navigation }) => {
             </View>
         ));
     };
+
+    const navigateToBusinessProfile = useCallback((business) => {
+        navigation.navigate("Business Profile", { business });
+    }, [navigation]);
 
     const renderRatingCheckBoxes = () => {
         return [1, 2, 3, 4, 5].map(rating => (
@@ -84,7 +121,7 @@ const HomeScreen = ({ navigation }) => {
     }, [selectedCategories, selectedRatings]);
 
     const renderItem = useCallback(({ item }) => (
-        <TouchableOpacity style={styles.businessItem} onPress={() => { /* navigateToBusinessProfile(item.id) */ }}>
+        <TouchableOpacity style={styles.businessItem} onPress={() => { navigateToBusinessProfile(item) }}>
             <Image source={item.image} style={styles.businessImage} />
             <View style={styles.businessInfo}>
                 <Text style={styles.businessName}>{item.name}</Text>
@@ -95,41 +132,63 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={styles.businessRating}>{`Rating: ${item.rating}`}</Text>
             </View>
         </TouchableOpacity>
-    ), []);
+    ), [navigateToBusinessProfile]);
 
     return (
         <View style={styles.container}>
-            <View style={styles.searchAndFilterContainer}>
-                <TextInput
-                    style={styles.searchBar}
-                    placeholder="Search businesses by name"
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                />
-                <TouchableOpacity onPress={toggleFilterModal}>
-                    <Ionicons name="filter" size={24} color="black" />
-                </TouchableOpacity>
-            </View>
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={isFilterModalVisible}
-                onRequestClose={toggleFilterModal}>
-                <View style={styles.modalView}>
-                    <Text style={styles.modalTitle}>Filter Options</Text>
-                    {renderCategoryCheckBoxes()}
-                    {renderRatingCheckBoxes()}
-                    <TouchableOpacity style={styles.button} onPress={applyFilters}>
-                        <Text style={styles.buttonText}>Apply Filters</Text>
-                    </TouchableOpacity>
+            <MapView
+                style={styles.map}
+                region={region}
+                showsUserLocation={true}
+                userInterfaceStyle='dark'
+            >
+                {filteredBusiness.map(business => (
+                    <Marker
+                        key={business.id}
+                        coordinate={{ latitude: business.latitude, longitude: business.longitude }}
+                        title={business.name}
+                    />
+                ))}
+            </MapView>
+            <BottomSheet ref={bottomSheetRef} snapPoints={snapPoints}>
+                <View style={styles.bottomSheetContent}>
+                    <View style={styles.searchAndFilterContainer}>
+                        <TextInput
+                            style={styles.searchBar}
+                            placeholder="Search businesses by name"
+                            value={searchQuery}
+                            onChangeText={setSearchQuery}
+                        />
+                        <TouchableOpacity onPress={toggleFilterModal}>
+                            <Ionicons name="filter" size={24} color="black" />
+                        </TouchableOpacity>
+                    </View>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={isFilterModalVisible}
+                        onRequestClose={toggleFilterModal}>
+                        <View style={styles.modalView}>
+                            <Text style={styles.modalTitle}>Filter Options</Text>
+                            {renderCategoryCheckBoxes()}
+                            {renderRatingCheckBoxes()}
+                            <TouchableOpacity style={styles.button} onPress={applyFilters}>
+                                <Text style={styles.buttonText}>Apply Filters</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </Modal>
+                    <FlatList
+                        data={filteredBusiness}
+                        renderItem={renderItem}
+                        showsVerticalScrollIndicator={false}
+                        removeClippedSubviews={true}
+                        keyExtractor={item => item.id.toString()}
+                        maxToRenderPerBatch={8}
+                        updateCellsBatchingPeriod={30}
+                        initialNumToRender={8}
+                    />
                 </View>
-            </Modal>
-            <FlatList
-                data={filteredBusiness}
-                renderItem={renderItem}
-                showsVerticalScrollIndicator={false}
-                keyExtractor={item => item.id.toString()}
-            />
+            </BottomSheet>
         </View>
     );
 };

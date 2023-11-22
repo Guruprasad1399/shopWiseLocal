@@ -26,7 +26,7 @@ export default function SignupScreen({ navigation }) {
                 .then(userCredentials => {
                     setIsLoading(false);
                     userCredentials.user;
-                    navigation.navigate('Welcome')
+                    navigation.navigate('WelcomeHome')
                 })
                 .catch(error => {
                     setIsLoading(false);

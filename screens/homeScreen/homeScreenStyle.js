@@ -3,7 +3,17 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f0f0f0',
+    },
+    map: {
+        width: '100%',
+        height: '50%',
+    },
+    bottomSheetContent: {
+        flex: 1,
+    },
+    selectedBusinessItem: {
+        borderColor: 'blue',
+        borderWidth: 2,
     },
     searchBar: {
         flex: 1,
